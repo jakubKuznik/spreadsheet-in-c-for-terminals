@@ -1,0 +1,14 @@
+Cviceni:Bodu:Projekt
+Prvni programy:0:
+Cyklus, typy:0:
+Retezce:0:2.8
+Funkce 1:0:
+Struktury:2:
+Ukazatele:2:
+Funkce:0:Obhajoba 1
+Malloc, dbg:2:
+5.9:0:
+25616516.6:5.5:3.3
+Iterace, rekurze:2:
+:0:Obhajoba 2
+Dynamicke struktury:2:
