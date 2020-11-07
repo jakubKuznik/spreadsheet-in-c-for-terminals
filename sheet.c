@@ -53,7 +53,7 @@ int data_manage(int zpracovani_funkce[], int argc, char *argv[], int pocet_radku
 int row_selection(int row_operation[],int argc, char *argv[], int row_max);
 
 //We'll send all info to this functions and it'll decide what operation(command) should program do
-int edit_decider(int edit_data[],int max_row, int true_size, char file[],int column_max, char separator);
+int edit_decider(int edit_data[],int *max_row, int true_size, char file[],int column_max, char separator);
 //there can be only one operation and one row_selection. so the first arg ll be choosen others ll be ignored 
 int data_decider(int edit_data[], int row_selection[], int max_row, int true_size, char file[], int column_max, char separator);
 
@@ -69,7 +69,8 @@ int rows(char file[], int row_operation[], int file_size, int rows[],int row_max
 
 
 //FUNCTIONS FOR EDIT_TABLE COMMANDS 
-int irow(int vybrany_radek, int true_size, char file[]);  //funkce mi prida prazdny radek pred vybrany radek 
+//it will add a new row
+int irow( int vybrany_radek, int true_size, char file[], int columns, char separator, int *max_radek);
 //This function delete rows
 void drows(char file[], int true_size, int start, int end); 
 /*This functiont delete columns 
@@ -169,7 +170,7 @@ int main(int argc, char *argv[])
 	}
 	else
 	{
-		edit_decider(edit_o,rows, real_size, file_stored, columns, d_separator);
+		real_size = edit_decider(edit_o, &rows, real_size, file_stored, columns, d_separator);
 	}
 	file_print(real_size, file_stored);
 
@@ -221,8 +222,9 @@ int file_print(int true_size, char file[])
 	return true_size;
 }
 //it will add a new row
-int irow( int vybrany_radek, int true_size, char file[])
+int irow( int vybrany_radek, int true_size, char file[], int columns, char separator, int *max_radek)
 {
+	*max_radek = *max_radek + 1 ;
 	int pocitadlo_radku = 0;
 	if(vybrany_radek < 0)
 		vybrany_radek = 0;
@@ -232,12 +234,30 @@ int irow( int vybrany_radek, int true_size, char file[])
 			pocitadlo_radku++;		
 		if(pocitadlo_radku == (vybrany_radek))
 		{
-			create_space(file, true_size, i);
-			file[i] = '\n';
+			if(vybrany_radek != 0)
+			{
+				create_space(file, true_size, i);
+				true_size++;
+				file[i] = '\n';
+				i++;
+			}
+			for (int j = 0; j < columns ; j++)
+			{					
+				create_space(file, true_size, i);
+				true_size++;
+				file[i] = separator;
+				i++;
+			}
+			if(vybrany_radek==0)
+			{
+				create_space(file, true_size, i);
+				true_size++;
+				file[i] = '\n';
+			}
 			break;	
 		}
 	}
-	return 0;
+	return true_size;
 }
 /*drows and drows 
  * This function can delete rows 
@@ -271,8 +291,7 @@ void drows(char file[], int true_size, int start, int end)
 int icol(char file[], int true_size, int chosen_column, int column_max, char separator, int rows)
 {
 	int separator_counter = 0;
-	if(chosen_column <= 0)
-		chosen_column = 0;
+	chosen_column = chosen_column +1;
 	if(chosen_column > column_max)
 	{
 		for(int k = 0; k < true_size+rows;k++)
@@ -280,6 +299,7 @@ int icol(char file[], int true_size, int chosen_column, int column_max, char sep
 			if(file[k] == '\n')
 			{
 				create_space(file, (true_size+rows),k);
+				true_size++;
 				file[k] = separator;
 				k = k+2;
 			}
@@ -288,12 +308,18 @@ int icol(char file[], int true_size, int chosen_column, int column_max, char sep
 	else
 	{
 		for(int j = 0; j < true_size+rows;j++)
-		{	
+		{
+			if(file[j] == '\n')
+			{
+				separator_counter = 0;
+				j++;
+			}	
 			if(file[j] == separator)
 				separator_counter++;
 			if(separator_counter == chosen_column)
 			{
 				create_space(file, (true_size+rows), j);
+				true_size++;
 				file[j] = separator;
 				separator_counter = 0;
 				while(file[j] != '\n')
@@ -302,7 +328,7 @@ int icol(char file[], int true_size, int chosen_column, int column_max, char sep
 			}
 		}
 	}
-	return 0; 
+	return true_size; 
 }
 //It delete columns from column to column_end 
 int dcol(char file[], int column, int column_end, int rows_max, int file_size, char separator, int column_max)
@@ -589,30 +615,29 @@ int array_inicialization(int array[], int array_size, int num)
 //Function is looking for edit data operation.
 //irow 1 2 //arow 3 //drow 4 5 //drows 6 7 8 ///icol 9 10 //acol 11 //dcol 12 13 //dcols 14 15 16
 // * 1. cset C STR 2. tolower C, 3. toupper C, 4. round C, 5. int C, 6. copy N M, 7.swap N M, 8.move N M;
-int edit_decider(int edit_table[], int max_row, int true_size, char file[],int column_max, char separator)
+int edit_decider(int edit_table[], int *max_row, int true_size, char file[],int column_max, char separator)
 {
-	int returner = 0;
+	int max_row_int = *max_row;
 	if(edit_table[0] == 1)
 	{
-		returner = 1;
 		if(edit_table[1] == 1)
-			irow(edit_table[2],true_size, file);
+			true_size = true_size + irow(edit_table[2],true_size, file, column_max, separator, &max_row_int);
 		if(edit_table[3] == 1)
-			irow(max_row, true_size, file);		
+			true_size = true_size + irow(max_row_int, true_size, file, column_max, separator, &max_row_int);		
 		if(edit_table[4] == 1)
 			drows(file, true_size, edit_table[5], edit_table[5]+1);
 		if(edit_table[6] == 1)
 			drows(file, true_size, edit_table[7], edit_table[8]);
 		if(edit_table[9] == 1)
-			icol(file, true_size, edit_table[10] - 1, column_max, separator, max_row);
+			true_size = true_size + icol(file, true_size, edit_table[10] - 1, column_max, separator, max_row_int);
 		if(edit_table[11] == 1)
-			icol(file, true_size, column_max+1, column_max, separator, max_row);
+			true_size = true_size + icol(file, true_size, column_max+1, column_max, separator, max_row_int);
 		if(edit_table[12] == 1)
-			dcol(file, edit_table[13], edit_table[13] + 1, max_row, true_size, separator, column_max);
+			dcol(file, edit_table[13], edit_table[13] + 1, max_row_int, true_size, separator, column_max);
 		if(edit_table[14] == 1)
-			dcol(file, edit_table[15], edit_table[16] , max_row, true_size, separator, column_max);
+			dcol(file, edit_table[15], edit_table[16] , max_row_int, true_size, separator, column_max);
 	}
-	return returner;
+	return true_size;
 }
 //it works only for 3CHARS 
 //Function save STR to cells in some column. 
