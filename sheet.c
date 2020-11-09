@@ -230,12 +230,12 @@ int irow( int choosen_row, int true_size, char file[], int columns, char separat
 		choosen_row = 0;
 	for(int i=0;i < true_size; i++)
 	{
+		if(file[i] == '\n')
 			row_counter++;		
 		if(row_counter == (choosen_row))
 		{
 			if(choosen_row != 0)
 			{
-		if(file[i] == '\n')
 				create_space(file, true_size, i);
 				true_size++;
 				file[i] = '\n';
