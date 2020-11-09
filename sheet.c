@@ -222,20 +222,20 @@ int file_print(int true_size, char file[])
 	return true_size;
 }
 //it will add a new row
-int irow( int vybrany_radek, int true_size, char file[], int columns, char separator, int *max_radek)
+int irow( int choosen_row, int true_size, char file[], int columns, char separator, int *max_row)
 {
-	*max_radek = *max_radek + 1 ;
-	int pocitadlo_radku = 0;
-	if(vybrany_radek < 0)
-		vybrany_radek = 0;
+	*max_row = *max_row + 1 ;
+	int row_counter = 0;
+	if(choosen_row < 0)
+		choosen_row = 0;
 	for(int i=0;i < true_size; i++)
 	{
-		if(file[i] == '\n')
-			pocitadlo_radku++;		
-		if(pocitadlo_radku == (vybrany_radek))
+			row_counter++;		
+		if(row_counter == (choosen_row))
 		{
-			if(vybrany_radek != 0)
+			if(choosen_row != 0)
 			{
+		if(file[i] == '\n')
 				create_space(file, true_size, i);
 				true_size++;
 				file[i] = '\n';
@@ -248,7 +248,7 @@ int irow( int vybrany_radek, int true_size, char file[], int columns, char separ
 				file[i] = separator;
 				i++;
 			}
-			if(vybrany_radek==0)
+			if(choosen_row==0)
 			{
 				create_space(file, true_size, i);
 				true_size++;
