@@ -1,6 +1,6 @@
 # spreadsheet-in-c-for-terminals
 
 
-FIT VUT 
-Základy programování
+FIT VUT /n
+Základy programování /n
 Jednoduchý tabulkový procesor v jazyce c bez dynamické alokace paměti.
