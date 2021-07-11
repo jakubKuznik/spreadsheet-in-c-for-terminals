@@ -2,7 +2,7 @@
 
 
 FIT VUT <br />
-Základy programování <br />
+IZP - Základy programování <br />
 1.projekt <br /><br />
 
 Jednoduchý tabulkový procesor v jazyce c bez dynamické alokace paměti.
